@@ -1,10 +1,24 @@
-# GSA ROX Registration — GitHub Pages + Supabase
+# GSA ROX registration form — GitHub Pages + Supabase
 
-1. In Supabase > SQL Editor, run `supabase.sql` in your intended project. Review existing table/policies before running again.
-2. In Supabase > Project Settings > API, copy **Project URL** and **publishable/anon key** into `config.js`. **Never use the secret/service_role key.**
-3. Create a GitHub repository, e.g. `gsa-rox-registration`, and upload `index.html` and `config.js` to its root. Keep `supabase.sql`/README in the repo if desired.
-4. GitHub repository > Settings > Pages > Deploy from a branch > main > / (root) > Save. Wait for GitHub to show the live URL, normally `https://YOUR-USERNAME.github.io/gsa-rox-registration/`.
-5. Test a registration. Check Supabase > Table Editor > `gsa_rox_registrations` to confirm the new row. Only organizers with authenticated dashboard access should see records. Payment fields are editable by staff in Supabase dashboard.
-6. **QR code:** Once the final Pages URL is live, paste it into a reputable QR generator, or use the companion `make_qr.py` script. Download a high-resolution PNG and test on two phones before printing.
+## Included
+- `index.html` — responsive entry form matching the supplied PDF style, including consent and payment section
+- `logo.png` — supplied GrowStrong Achievers logo
+- `payment-qr.jpeg` — supplied Paytm QR image (recipient AP WIZARD PRO)
+- `config.js` — configure Supabase URL and **publishable/anon** key
+- `supabase.sql` — create registration table and public INSERT-only RLS policy
 
-**Important:** This is a static website, not a GitHub-hosted database. GitHub Pages serves the form; Supabase stores the records. The public key is designed to be exposed, so RLS is critical. Public anonymous inserts can be spammed: add CAPTCHA, rate limiting and server-side validation before a high-volume launch. The medical and children's data is sensitive; minimize collection, restrict access, set a retention policy, and obtain appropriate privacy/legal review of consent language. Payment is NOT collected online by this form. Do not claim an entry is confirmed until staff checks payment.
+## Install
+1. In Supabase SQL Editor, run `supabase.sql`. Creates a NEW `gsa_rox_registrations` table. Does not alter `gsa_leads`.
+2. In Supabase Project Settings > API, copy the Project URL and publishable/anon key into `config.js`. **Never** put the service-role/secret key in GitHub.
+3. Create a public GitHub repo. Upload all five files to repo root.
+4. Repo Settings > Pages > Deploy from branch > main > /(root) > Save. Wait for published URL.
+5. Test registration on phone, then verify record in Supabase Table Editor.
+6. Generate registration QR using the exact GitHub Pages URL at https://www.qrcode-monkey.com/ . The Paytm QR in the form is a DIFFERENT QR.
+
+## Important
+- The PDF says **₹1,000**, while the supplied Google Form screenshot says **₹500**. This version uses ₹1,000 as printed in the PDF. Confirm pricing before launch; if changed, update the HTML and SQL constraint together.
+- Payment link is transcribed from the supplied screenshot: `https://p.ppsl.io/PYTMPS/03liBk`. Confirm that it is active, points to AP WIZARD PRO, and supports entering ₹1,000 before publishing.
+- Payment status is a **parent's claim**, not verified payment. Verify the UTR with your Paytm/bank settlement records. No automatic payment reconciliation.
+- Supabase RLS allows anonymous inserts only. No public SELECT/UPDATE/DELETE. Add CAPTCHA/Turnstile and server-side rate limiting before public promotion.
+- Avoid publicly storing child medical data without appropriate privacy notice, access control, retention policy and secure handling.
+- If you already ran an earlier version of `supabase.sql`, use a new table or migrate the existing schema; `CREATE TABLE IF NOT EXISTS` will not add new columns to an existing table.
